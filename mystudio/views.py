@@ -22,14 +22,6 @@ class PostedSong(ListView):
     template_name = 'mystudio.html'
     model = PostedSong
 
-class LoginView(AuthLoginView):
-    def post(self,request,*arg,**kwargs):
-        pass
-
-    def get(self,request,*arg,**kwargs):
-        form = UserCreateForm(request.POST)
-        render(request,'login.html',{'form':form})
-
 
 #for signup
 from django.contrib.auth.models import User
@@ -54,41 +46,30 @@ class Create_account(CreateView):
         form = UserCreateForm(request.POST)
         return  render(request, 'create.html', {'form': form,})
 
-
-
-
-
-
-
-
-
-
-
 ''' write again under below'''
+class LoginView(AuthLoginView):
+    #form_class = LoginForm
+    #template_name = 'login.html'
+    def get(self,request,*args,**kwargs):
+        '''method for GET request '''
+        context = {
+            'form' :LoginForm()
+            }
+        return render(request,'login.html',context)
 
-#class LoginView(View):
-#    def get(self,request,*args,**kwargs):
-#        '''method for GET request'''
-#        context = {'form':LoginForm(),
-#        }
-        #rendering empty form for login-screen-template
-#        return render(request,'accounts/login.html',context)
+    def post(self,request,*args,**kwargs):
+        '''method for POST request'''
+        form = LoginForm(data=request.POST)
+        if not form.is_valid():
+            return render(request,'login.html',{'form':form})
+        user = form.get_user()
+        #user = authenticate(request,username=username2,password=password2)
+        login(request,user)
+        return redirect('mystudio')
 
-#    def post(self,request,*arg,**kwargs):
-#        '''method for POST request'''
-#        form = LoginForm(request.Post)
-#        if not form.is_valid():
-#            return render(request,'login.html',{'form':form})
-        #get user-object from form
-#        user = form.get_user()
+class LogoutView(AuthLoginView):
+    template_name = 'test.html'
 
-        #Login
-#        auth_login(request,user)
-
-        #redirect another screen
-#        return redirect(reverse('shop:index'))
-
-#login = LoginView.as_view()
 
 
 
